@@ -29,29 +29,29 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRetentionCmd(t *testing.T) {
-	topic := fmt.Sprintf("test-retention-topic-%s", test.RandomSuffix())
+func TestRetention(t *testing.T) {
+	topicName := fmt.Sprintf("test-retention-topic-%s", test.RandomSuffix())
+	_, execErr, _, _ := TestTopicCommands(CreateTopicCmd, []string{"create", topicName, "1"})
+	assert.Nil(t, execErr)
 
-	args := []string{"set-retention", topic, "--time", "1h", "--size", "10m"}
-	out, execErr, nameErr, cmdErr := TestTopicCommands(SetRetentionCmd, args)
+	setArgs := []string{"set-retention", topicName, "--time", "1h", "--size", "10m"}
+	out, execErr, nameErr, cmdErr := TestTopicCommands(SetRetentionCmd, setArgs)
 	assert.Nil(t, execErr)
 	assert.Nil(t, nameErr)
 	assert.Nil(t, cmdErr)
 	assert.NotNil(t, out)
 	assert.NotEmpty(t, out.String())
-	t.Log(fmt.Sprintf("set-retention response: %s", out.String()))
 
 	// waiting for the pulsar to be configured
-	<-time.After(5 * time.Second)
+	time.Sleep(time.Second)
 
-	args = []string{"get-retention", topic}
-	out, execErr, nameErr, cmdErr = TestTopicCommands(GetRetentionCmd, args)
+	getArgs := []string{"get-retention", topicName}
+	out, execErr, nameErr, cmdErr = TestTopicCommands(GetRetentionCmd, getArgs)
 	assert.Nil(t, execErr)
 	assert.Nil(t, nameErr)
 	assert.Nil(t, cmdErr)
 	assert.NotNil(t, out)
 	assert.NotEmpty(t, out.String())
-	t.Log(fmt.Sprintf("get-retention response: %s", out.String()))
 
 	var data utils.RetentionPolicies
 	err := json.Unmarshal(out.Bytes(), &data)
@@ -59,23 +59,20 @@ func TestRetentionCmd(t *testing.T) {
 	assert.Equal(t, 3600, data.RetentionTimeInMinutes)
 	assert.Equal(t, int64(10*1024*1024), data.RetentionSizeInMB)
 
-	args = []string{"remove-retention", topic}
-	out, execErr, nameErr, cmdErr = TestTopicCommands(RemoveRetentionCmd, args)
+	removeArgs := []string{"remove-retention", topicName}
+	out, execErr, nameErr, cmdErr = TestTopicCommands(RemoveRetentionCmd, removeArgs)
 	assert.Nil(t, execErr)
 	assert.Nil(t, nameErr)
 	assert.Nil(t, cmdErr)
 	assert.NotNil(t, out)
 	assert.NotEmpty(t, out.String())
-	t.Log(fmt.Sprintf("remove-retention response: %s", out.String()))
 
-	args = []string{"get-retention", topic}
-	out, execErr, nameErr, cmdErr = TestTopicCommands(GetRetentionCmd, args)
+	out, execErr, nameErr, cmdErr = TestTopicCommands(GetRetentionCmd, getArgs)
 	assert.Nil(t, execErr)
 	assert.Nil(t, nameErr)
 	assert.Nil(t, cmdErr)
 	assert.NotNil(t, out)
 	assert.NotEmpty(t, out.String())
-	t.Log(fmt.Sprintf("get-retention response: %s", out.String()))
 
 	data = utils.RetentionPolicies{}
 	err = json.Unmarshal(out.Bytes(), &data)
