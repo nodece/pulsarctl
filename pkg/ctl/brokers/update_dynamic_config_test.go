@@ -34,7 +34,7 @@ func TestUpdateDynamicConfig(t *testing.T) {
 	failArgs := []string{"update-dynamic-config", "--config", "errorName", "--value", "true"}
 	_, nameErr, _, _ := TestBrokersCommands(updateDynamicConfig, failArgs)
 	assert.NotNil(t, nameErr)
-	assert.Equal(t, "code: 412 reason:  Can't update non-dynamic configuration", nameErr.Error())
+	assert.Equal(t, "code: 412 reason:  Cannot update non-dynamic configuration", nameErr.Error())
 
 	getArgs := []string{"get-all-dynamic-config"}
 	getOut, execErr, _, _ := TestBrokersCommands(getAllDynamicConfigsCmd, getArgs)

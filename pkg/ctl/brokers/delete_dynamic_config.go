@@ -44,8 +44,8 @@ func deleteDynamicConfigCmd(vc *cmdutils.VerbCmd) {
 	}
 
 	failOut := cmdutils.Output{
-		Desc: "Can't update non-dynamic configuration, please check `--config` arg.",
-		Out:  "[✖]  code: 412 reason:  Can't update non-dynamic configuration",
+		Desc: "Cannot update non-dynamic configuration, please check `--config` arg.",
+		Out:  "[✖]  code: 412 reason:  Cannot update non-dynamic configuration",
 	}
 
 	out = append(out, successOut, failOut)
