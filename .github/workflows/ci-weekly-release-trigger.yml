@@ -11,7 +11,9 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
+
       - uses: actions/github-script@v6
+        id: create-tag
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -23,9 +25,15 @@ jobs:
             const minute = d.getUTCMinutes().toString().padStart(2,'0')
             
             const ref = `refs/tags/v0.0.0-${year}${month}${date}${hour}${minute}`
+            console.log(ref)
+
             await github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: ref,
               sha: context.sha
             })
+
+
+      - name: Get result
+        run: echo "${{steps.create-tag.outputs.result}}"
