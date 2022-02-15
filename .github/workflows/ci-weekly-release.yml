@@ -1,0 +1,32 @@
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v0.0.0-*'
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+          id: go
+
+      - uses: goreleaser/goreleaser-action@v2
+        with:
+          distribution: goreleaser
+          version: 1.4.1
+          install-only: true
+
+      - name: Release by goreleaser
+        run: |
+          GIT_PREVIOUS_TAG=$(git tag --sort=-v:refname -l "v0.0.0-*" | head -2 | tail -1)
+          if [[ -z "$GIT_PREVIOUS_TAG" ]]; then
+            GIT_PREVIOUS_TAG=v2.9.2.2
+          fi
+          export GORELEASER_PREVIOUS_TAG=$GIT_PREVIOUS_TAG
+          export GO_VERSION=$(go version | awk '{print $3}')
+
+          goreleaser release --skip-validate --skip-sbom

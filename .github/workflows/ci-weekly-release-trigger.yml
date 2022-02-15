@@ -1,0 +1,31 @@
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 5' # At 00:00 on Friday
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const d = new Date()
+            const year = d.getUTCFullYear()
+            const month = (d.getUTCMonth()+1).toString().padStart(2,'0')
+            const date = d.getDate().toString().padStart(2,'0')
+            const hour = d.getUTCHours().toString().padStart(2,'0')
+            const minute = d.getUTCMinutes().toString().padStart(2,'0')
+            
+            const ref = `refs/tags/v0.0.0-${year}${month}${date}${hour}${minute}`
+            await github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: ref,
+              sha: context.sha
+            })
