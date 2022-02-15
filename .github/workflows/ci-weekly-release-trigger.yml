@@ -23,7 +23,7 @@ jobs:
             const minute = d.getUTCMinutes().toString().padStart(2,'0')
             
             const ref = `refs/tags/v0.0.0-${year}${month}${date}${hour}${minute}`
-            await github.git.createRef({
+            await github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: ref,
