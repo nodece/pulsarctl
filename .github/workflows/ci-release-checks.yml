@@ -25,12 +25,12 @@ jobs:
       - name: build
         run: |
           $Env:CGO_ENABLED=0
-          $Env:GOOS=linux
-          $Env:GOARCH=amd64
+          $Env:GOOS='linux'
+          $Env:GOARCH='amd64'
           go build -o pulsarctl-amd64-linux -ldflags "-X github.com/streamnative/pulsarctl/pkg/pulsar.ReleaseVersion=Pulsarctl-Go" .
-          $Env:GOOS=darwin
+          $Env:GOOS='darwin'
           go build -o pulsarctl-amd64-darwin -ldflags "-X github.com/streamnative/pulsarctl/pkg/pulsar.ReleaseVersion=Pulsarctl-Go" .
-          $Env:GOOS=windows
+          $Env:GOOS='windows'
           go build -o  pulsarctl-amd64-windows.exe -ldflags "-X github.com/streamnative/pulsarctl/pkg/pulsar.ReleaseVersion=Pulsarctl-Go" .
           go build -o  pulsarctl-386-windows.exe -ldflags "-X github.com/streamnative/pulsarctl/pkg/pulsar.ReleaseVersion=Pulsarctl-Go" .
 
