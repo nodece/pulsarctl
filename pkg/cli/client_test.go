@@ -15,19 +15,33 @@
 // specific language governing permissions and limitations
 // under the License.
 
-package brokers
+package cli
 
 import (
-	"strings"
+	"io/ioutil"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestHealthCheck(t *testing.T) {
-	args := []string{"healthcheck"}
-	checkOut, execErr, _, _ := TestBrokersCommands(healthCheckCmd, args)
-	assert.Nil(t, execErr)
-	str := strings.ReplaceAll(checkOut.String(), "\n", "")
-	assert.Equal(t, "ok", str)
+func TestEncodeJSONBody(t *testing.T) {
+	testcases := []struct {
+		obj      interface{}
+		expected int
+	}{
+		{obj: "1", expected: 3},
+		{obj: "12", expected: 4},
+		{obj: 1, expected: 1},
+		{obj: 12, expected: 2},
+	}
+
+	for _, testcase := range testcases {
+		r, err := encodeJSONBody(testcase.obj)
+		require.NoError(t, err)
+
+		b, err := ioutil.ReadAll(r)
+		require.NoError(t, err)
+
+		require.Equal(t, testcase.expected, len(b))
+	}
 }
